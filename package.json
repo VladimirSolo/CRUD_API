@@ -1,0 +1,37 @@
+{
+  "name": "crud_api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "scripts": {
+    "start:dev": "cross-env MODE=development webpack -w",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VladimirSolo/CRUD_API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VladimirSolo/CRUD_API/issues"
+  },
+  "homepage": "https://github.com/VladimirSolo/CRUD_API#readme",
+  "devDependencies": {
+    "@types/node": "^20.11.17",
+    "@types/uuid": "^9.0.8",
+    "cross-env": "^7.0.3",
+    "nodemon": "^3.0.3",
+    "nodemon-webpack-plugin": "^4.8.2",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.2",
+    "uuid": "^9.0.1"
+  }
+}
