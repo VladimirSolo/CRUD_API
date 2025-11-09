@@ -6,7 +6,8 @@
   "scripts": {
     "start:dev": "cross-env MODE=development webpack -w",
     "start:prod": "npm run build && node dist/bundle.js",
-    "build": "cross-env MODE=production webpack"
+    "build": "cross-env MODE=production webpack",
+    "test": "jest --detectOpenHandles --forceExit"
   },
   "repository": {
     "type": "git",
@@ -20,11 +21,16 @@
   },
   "homepage": "https://github.com/VladimirSolo/CRUD_API#readme",
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.11.17",
+    "@types/supertest": "^6.0.3",
     "@types/uuid": "^9.0.8",
     "cross-env": "^7.0.3",
+    "jest": "^30.2.0",
     "nodemon": "^3.0.3",
     "nodemon-webpack-plugin": "^4.8.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.5",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3",

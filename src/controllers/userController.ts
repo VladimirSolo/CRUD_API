@@ -1,12 +1,14 @@
 import { IncomingMessage, ServerResponse } from 'http';
-import { CreateUserDto, UpdateUserDto } from './../types/user';
 import { userService } from '../services/userService';
+import { CreateUserDto, UpdateUserDto } from '../types/user';
 
-export class UserController {
+class UserController {
   async getAllUsers(req: IncomingMessage, res: ServerResponse): Promise<void> {
     try {
       const users = await userService.getAllUsers();
-      this.sendJsonResponse(res, 200, users);
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(users));
     } catch (error) {
       this.handleError(res, error);
     }
@@ -16,15 +18,21 @@ export class UserController {
     try {
       const user = await userService.getUserById(userId);
 
-      if (user === null) {
-        this.sendJsonResponse(res, 404, { message: 'User not found' });
+      if (!user) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: 'User not found' }));
         return;
       }
 
-      this.sendJsonResponse(res, 200, user);
-    } catch (error) {
-      if (error instanceof Error && error.message === 'Invalid user ID') {
-        this.sendJsonResponse(res, 400, { message: 'Invalid user ID (not UUID)' });
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(user));
+    } catch (error: any) {
+      if (error.message === 'Invalid user ID') {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: error.message }));
         return;
       }
       this.handleError(res, error);
@@ -37,16 +45,16 @@ export class UserController {
       const dto: CreateUserDto = body;
 
       const newUser = await userService.createUser(dto);
-      this.sendJsonResponse(res, 201, newUser);
-    } catch (error) {
-      if (error instanceof Error) {
-        if (
-          error.message.includes('required') ||
-          error.message.includes('must be')
-        ) {
-          this.sendJsonResponse(res, 400, { message: error.message });
-          return;
-        }
+
+      res.statusCode = 201;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(newUser));
+    } catch (error: any) {
+      if (error.message.includes('required') || error.message.includes('must be')) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: error.message }));
+        return;
       }
       this.handleError(res, error);
     }
@@ -59,15 +67,21 @@ export class UserController {
 
       const updatedUser = await userService.updateUser(userId, dto);
 
-      if (updatedUser === null) {
-        this.sendJsonResponse(res, 404, { message: 'User not found' });
+      if (!updatedUser) {
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: 'User not found' }));
         return;
       }
 
-      this.sendJsonResponse(res, 200, updatedUser);
-    } catch (error) {
-      if (error instanceof Error && error.message === 'Invalid user ID') {
-        this.sendJsonResponse(res, 400, { message: 'Invalid user ID (not UUID)' });
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify(updatedUser));
+    } catch (error: any) {
+      if (error.message === 'Invalid user ID') {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: error.message }));
         return;
       }
       this.handleError(res, error);
@@ -79,15 +93,19 @@ export class UserController {
       const deleted = await userService.deleteUser(userId);
 
       if (!deleted) {
-        this.sendJsonResponse(res, 404, { message: 'User not found' });
+        res.statusCode = 404;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: 'User not found' }));
         return;
       }
 
       res.statusCode = 204;
       res.end();
-    } catch (error) {
-      if (error instanceof Error && error.message === 'Invalid user ID') {
-        this.sendJsonResponse(res, 400, { message: 'Invalid user ID (not UUID)' });
+    } catch (error: any) {
+      if (error.message === 'Invalid user ID') {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ message: error.message }));
         return;
       }
       this.handleError(res, error);
@@ -97,37 +115,25 @@ export class UserController {
   private async parseBody(req: IncomingMessage): Promise<any> {
     return new Promise((resolve, reject) => {
       let body = '';
-
       req.on('data', (chunk) => {
         body += chunk.toString();
       });
-
       req.on('end', () => {
         try {
-          const parsed = JSON.parse(body);
-          resolve(parsed);
+          resolve(JSON.parse(body));
         } catch (error) {
-          reject(new Error('Invalid JSON in request body'));
+          reject(new Error('Invalid JSON'));
         }
       });
-
-      req.on('error', (error) => {
-        reject(error);
-      });
+      req.on('error', reject);
     });
   }
 
-  private sendJsonResponse(res: ServerResponse, statusCode: number, data: any): void {
-    res.statusCode = statusCode;
+  private handleError(res: ServerResponse, error: any): void {
+    console.error('Error:', error);
+    res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(data));
-  }
-
-  private handleError(res: ServerResponse, error: unknown): void {
-    console.error('Server error:', error);
-    this.sendJsonResponse(res, 500, {
-      message: 'Internal server error',
-    });
+    res.end(JSON.stringify({ message: 'Internal server error' }));
   }
 }
 
