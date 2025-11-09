@@ -6,6 +6,7 @@
   "scripts": {
     "start:dev": "cross-env MODE=development webpack -w",
     "start:prod": "npm run build && node dist/bundle.js",
+    "start:multi": "ts-node src/cluster.ts",
     "build": "cross-env MODE=production webpack",
     "test": "jest --detectOpenHandles --forceExit"
   },

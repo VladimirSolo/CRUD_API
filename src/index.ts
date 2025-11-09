@@ -4,7 +4,7 @@ import { router } from './routes/router';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 export const createServer = () => {
   return http.createServer(async (request, response) => {
@@ -19,7 +19,6 @@ export const createServer = () => {
   });
 };
 
-// Запускаем сервер только если файл запущен напрямую
 if (require.main === module) {
   const server = createServer();
 
