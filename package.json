@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "start:dev": "cross-env MODE=development webpack -w",
-    "build": "webpack"
+    "start:prod": "npm run build && node dist/bundle.js",
+    "build": "cross-env MODE=production webpack"
   },
   "repository": {
     "type": "git",
