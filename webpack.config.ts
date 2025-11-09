@@ -3,6 +3,8 @@ import NodemonPlugin from "nodemon-webpack-plugin";
 import { DefinePlugin } from "webpack";
 import dotenv from "dotenv";
 
+const isDevelopment = process.env.MODE === 'development';
+
 module.exports = {
   entry: path.resolve(__dirname, "./src/index.ts"),
   mode: process.env.MODE || 'development',
@@ -22,11 +24,13 @@ module.exports = {
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
+    clean: true,
   },
   plugins: [
-    new NodemonPlugin({ script: "dist/bundle.js" }),
+    ...(isDevelopment ? [new NodemonPlugin({ script: "dist/bundle.js" })] : []),
     new DefinePlugin({
       "process.env": JSON.stringify(dotenv.config().parsed),
     }),
   ],
+  watch: isDevelopment,
 };
